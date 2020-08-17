@@ -1,7 +1,7 @@
             // Create new wheel object specifying the parameters at creation time.
-            console.log("POOP 1");
+            console.log("POOP 2");
             let theWheel = new Winwheel({
-                'numSegments'       : 15,                 // Specify number of segments.
+                'numSegments'       : 8,                 // Specify number of segments.
                 'outerRadius'       : 200,               // Set outer radius so wheel fits inside the background.
                 'drawText'          : true,              // Code drawn text can be used with segment images.
                 'textFontSize'      : 16,
@@ -21,15 +21,9 @@
                    {'image' : 'alex.png',  'text' : 'Alex'},
                    {'image' : 'sarah.png', 'text' : 'Sarah'},
                    {'image' : 'bruce.png', 'text' : 'Bruce'},
-                   {'image' : 'rose.png',  'text' : 'Rose'},
-                   {'image' : 'jane.png',  'text' : 'Jane'},
-                   {'image' : 'tom.png',   'text' : 'Tom'},
-                   {'image' : 'mary.png',  'text' : 'Mary'},
-                   {'image' : 'alex.png',  'text' : 'Alex'},
-                   {'image' : 'sarah.png', 'text' : 'Sarah'},
-                   {'image' : 'bruce.png', 'text' : 'Bruce'},
-                   {'image' : 'rose.png',  'text' : 'Rose'},
-                   {'image' : 'steve.png', 'text' : 'Steve'}
+                   {'image' : 'rose.png',  'text' : 'Rose'},                  
+                   {'image' : 'steve.png', 'text' : 'Steve'},
+                   {'image' : 'steve.png', 'text' : 'Steve2'}
                 ],
                 'animation' :           // Specify the animation to use.
                 {
