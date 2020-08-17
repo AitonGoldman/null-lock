@@ -1,6 +1,6 @@
             // Create new wheel object specifying the parameters at creation time.
             let theWheel = new Winwheel({
-                'numSegments'       : 16,                 // Specify number of segments.
+                'numSegments'       : 15,                 // Specify number of segments.
                 'outerRadius'       : 200,               // Set outer radius so wheel fits inside the background.
                 'drawText'          : true,              // Code drawn text can be used with segment images.
                 'textFontSize'      : 16,
