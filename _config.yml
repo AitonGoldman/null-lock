@@ -205,7 +205,7 @@ defaults:
     values:
       layout: "page"
       show-avatar: true
-      js: "/assets/js/jquery-3.4.1.min.js"
+      #js: "/assets/js/jquery-3.4.1.min.js"
 
 # Exclude these files from production site
 exclude:
