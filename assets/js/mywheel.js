@@ -1,6 +1,6 @@
             // Create new wheel object specifying the parameters at creation time.
             let theWheel = new Winwheel({
-                'numSegments'       : 8,                 // Specify number of segments.
+                'numSegments'       : 16,                 // Specify number of segments.
                 'outerRadius'       : 200,               // Set outer radius so wheel fits inside the background.
                 'drawText'          : true,              // Code drawn text can be used with segment images.
                 'textFontSize'      : 16,
@@ -14,6 +14,13 @@
                 'drawMode'          : 'segmentImage',    // Must be segmentImage to draw wheel using one image per segemnt.
                 'segments'          :                    // Define segments including image and text.
                 [
+                   {'image' : 'jane.png',  'text' : 'Jane'},
+                   {'image' : 'tom.png',   'text' : 'Tom'},
+                   {'image' : 'mary.png',  'text' : 'Mary'},
+                   {'image' : 'alex.png',  'text' : 'Alex'},
+                   {'image' : 'sarah.png', 'text' : 'Sarah'},
+                   {'image' : 'bruce.png', 'text' : 'Bruce'},
+                   {'image' : 'rose.png',  'text' : 'Rose'},
                    {'image' : 'jane.png',  'text' : 'Jane'},
                    {'image' : 'tom.png',   'text' : 'Tom'},
                    {'image' : 'mary.png',  'text' : 'Mary'},
