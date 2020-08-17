@@ -1,4 +1,5 @@
             // Create new wheel object specifying the parameters at creation time.
+            console.log("POOP 1");
             let theWheel = new Winwheel({
                 'numSegments'       : 15,                 // Specify number of segments.
                 'outerRadius'       : 200,               // Set outer radius so wheel fits inside the background.
