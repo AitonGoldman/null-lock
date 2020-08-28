@@ -1,7 +1,7 @@
 # Site settings
-title:
+title: null-lock
 email:
-description: > # this means to ignore newlines until "baseurl:"
+description: > You got a problem, yo I'll solve it.  
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "" # the base hostname & protocol for your site
 
