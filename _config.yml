@@ -2,7 +2,7 @@
 title: null-lock
 email:
 description: You got a problem, yo I'll solve it.  You Checkout the hook while my DJ revolves it.  
-baseurl: "" # the subpath of your site, e.g. /blog/
+baseurl: "/null-lock/" # the subpath of your site, e.g. /blog/
 url: "" # the base hostname & protocol for your site
 
 twitter_username:
