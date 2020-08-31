@@ -8,7 +8,10 @@ function loadImages(){
         // document.body.appendChild(i);
         $("body").append("<img style='position:absolute;visibility:hidden' id='"+imgId+"' src='https://aitongoldman.github.io/null-lock/img/"+spockPics[imgId]+"'>");
     }    
+    $("body").append('<div id="phaser_beam" style="position:absolute;visibility: hidden;">')
+    $("body").append('<style>#phaser_beam {background-color:green;transform: rotate(10deg);}</style>');
 }
+
 $(document).ready(function (){
     loadImages();
     $("#spock_start_walk_1").css("visibility","visible")
