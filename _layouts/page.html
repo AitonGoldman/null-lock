@@ -1,0 +1,50 @@
+---
+common-ext-css:
+  - "https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic"
+  - "https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+common-css:
+- "/css/bootstrap.min.css"
+- "/css/animate.min.css"
+- "/css/all.min.css"
+- "/css/main.css"
+
+navLinks:
+  - page: "test"
+    description: "TESTING"
+  - page: "best"
+    description: "BESTING"    
+  - page: "west"
+    description: "WESTING"    
+  - page: "nest"
+    description: "NESTING"    
+common-js:
+  - "/js/jquery.js"
+  - "/js/bootstrap.min.js"
+  - "/js/jquery.easing.min.js"
+  - "/js/jquery.fittext.js"
+  - "/js/wow.min.js"
+  - "/js/creative.js"
+---
+<!DOCTYPE html>
+<html lang="en">
+
+<!--
+common-ext-js:
+  - "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+  - "https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"
+  - "https://cdnjs.cloudflare.com/ajax/libs/FitText.js/1.2.0/jquery.fittext.min.js"
+  - "https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"
+-->
+{% include head.html %}
+
+<body id="page-top"> 
+  {% include nav.html %}
+  {% include header.html %}  
+  {% include call-to-action.html %}
+  {% include services.html %}
+  {{ content }}
+  {% include footer-scripts.html %}
+
+</body>
+
+</html>
