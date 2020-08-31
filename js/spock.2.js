@@ -6,7 +6,7 @@ function loadImages(){
         // i.id=imgId;
         // //i.style="visibility:hidden;position:absolute;";
         // document.body.appendChild(i);
-        $("body").append("<img style='position:absolute;visibility:visible' id='"+imgId+"' src='https://aitongoldman.github.io/null-lock/img/"+spockPics[imgId]+"'>");
+        $("body").append("<img style='position:absolute;visibility:hidden' id='"+imgId+"' src='https://aitongoldman.github.io/null-lock/img/"+spockPics[imgId]+"'>");
     }    
 }
 $(document).ready(function (){
