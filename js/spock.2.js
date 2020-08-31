@@ -6,6 +6,11 @@ function loadImages(){
         i.id=imgId;
         i.style="visibility:hidden;position:absolute;";
         document.body.appendChild(i);
-    }
+    }    
 }
-loadImages();
+$(document).ready(function (){
+    loadImages();
+    $("#img")[0].css("visibility","visible")
+})
+
+
