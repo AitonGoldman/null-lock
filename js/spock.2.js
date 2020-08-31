@@ -9,7 +9,7 @@ function loadImages(){
         $("body").append("<img style='position:absolute;visibility:hidden' id='"+imgId+"' src='https://aitongoldman.github.io/null-lock/img/"+spockPics[imgId]+"'>");
     }    
     $("body").append('<div id="phaser_beam" style="position:absolute;">')
-    $("body").append('<style>#phaser_beam {background-color:green;transform: rotate(10deg);width:100px;height:2px}</style>');
+    $("body").append('<style>#phaser_beam {background-color:green;transform:rotate(10deg);}</style>');
 }
 
 $(document).ready(function (){
