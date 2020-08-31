@@ -8,3 +8,4 @@ function loadImages(){
         document.body.appendChild(i);
     }
 }
+loadImages();
