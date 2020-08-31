@@ -10,7 +10,7 @@ function loadImages(){
 }
 $(document).ready(function (){
     loadImages();
-    $("#img")[0].css("visibility","visible")
+    $("#spock_start_walk_1").css("visibility","visible")
 })
 
 
