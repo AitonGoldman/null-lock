@@ -36,7 +36,7 @@ function getColor(index, total) {
 $.widget('javobyte.rouletteWheel', {
 
     options: {
-        pointer: $('<img>').attr('src', '/img/pointer.png')[0],
+        // pointer: $('<img>').attr('src', '/null-lock/img/pointer.png')[0],
         start: function () {
 	},
         selected: function () {
@@ -55,6 +55,7 @@ $.widget('javobyte.rouletteWheel', {
 
     _create: function () {
         if (!this.options.items) throw 'No items provided';
+        console.log(this.options);
 
         var canvas = this.element[0];
 
@@ -121,6 +122,7 @@ $.widget('javobyte.rouletteWheel', {
         $(this.options.pointer).load(function () {
             widget._draw();
         });
+        console.log(this.options.pointer)
     },
 
     _draw: function () {
