@@ -11,7 +11,7 @@ function loadImages(){
 }
 $(document).ready(function (){
     loadImages();
-    //$("#spock_start_walk_1").css("visibility","visible")
+    $("#spock_start_walk_1").css("visibility","visible")
 })
 
 
