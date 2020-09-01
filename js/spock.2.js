@@ -128,11 +128,7 @@ function choose_next_animation(spock){
     }
     if(spock.rules[spock.current_animation]){
         new_animation_range = spock.rules[spock.current_animation].length;              
-        var new_animation_list = spock.rules[spock.current_animation];
-        animationsLeft.findIndex((e)=>{
-
-        })
-        
+        var new_animation_list = spock.rules[spock.current_animation];               
         new_animation_index = getRandomInt(new_animation_list.length);
         new_animation = new_animation_list[new_animation_index].new_animation;  
         num_repeats = getRandomInt(new_animation_list[new_animation_index].num_repeats);
@@ -356,7 +352,7 @@ $(document).ready(function () {
         create_animation_frame(turn_left, animation_frame, 100, "spock_turn_left_" + x, 0,0);
         animation_frame = animation_frame + 1;
     }
-    
+
     create_animation_frame(animations[ANIMATION_RETURN_TO_STANDING], 0, 100, "spock_turn_left_2", 0,0);
     create_animation_frame(animations[ANIMATION_RETURN_TO_STANDING], 1, 100, "spock_turn_left_1", 0,0);
     
