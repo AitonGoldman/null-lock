@@ -12,6 +12,7 @@ function loadImages(){
     //$("body").append('<style>#phaser_beam {background-color:green;transform:rotate(10deg);}</style>');
 }
 
+animationHistory = []
 
 
 var MAX_META_ANIMATIONS = 1;
@@ -39,7 +40,9 @@ var ANIMATION_PHASER_CROUCH_LEFT=13;
 var ANIMATION_PHASER_STANDING_LEFT=14;
 var ANIMATION_PHASER_HOLSTER_LEFT=15;
 var ANIMATION_PHASER_END_LEFT=16;
-
+var ANIMATION_RETURN_TO_STANDING=17;
+var animationStarts=[ANIMATION_BEAM_IN,ANIMATION_WALK_LEFT_START,ANIMATION_COM_LEFT,ANIMATION_TRI_START_LEFT,ANIMATION_PHASER_START_LEFT];
+var animationsLeft=[...animationStarts];
 
 const deepCopyFunction = (inObject) => {
     let outObject, value, key
@@ -126,18 +129,9 @@ function choose_next_animation(spock){
     if(spock.rules[spock.current_animation]){
         new_animation_range = spock.rules[spock.current_animation].length;              
         var new_animation_list = spock.rules[spock.current_animation];
-        // if(spock.last_three_animations.length==3){
-        //     new_animation_list = spock.rules[spock.current_animation].slice().filter((x)=>{
-        //         if(x.new_animation!=spock.last_three_animations[0]){
-        //             return true;
-        //         }
-        //         return false;
-        //     });
-        //     if(new_animation_list.length == 0){
-        //         console.log("choices", spock.rules[spock.current_animation]);
-        //         console.log("last three animations",spock.last_three_animations)
-        //     }
-        // }
+        animationsLeft.findIndex((e)=>{
+
+        })
         
         new_animation_index = getRandomInt(new_animation_list.length);
         new_animation = new_animation_list[new_animation_index].new_animation;  
@@ -344,7 +338,7 @@ $(document).ready(function () {
     animations[ANIMATION_PHASER_CROUCH_LEFT] = create_animation_object(3)
     animations[ANIMATION_PHASER_STANDING_LEFT] = create_animation_object(3)
     animations[ANIMATION_PHASER_HOLSTER_LEFT] = create_animation_object(4)
-
+    animations[ANIMATION_RETURN_TO_STANDING] = create_animation_object(2)
     var animation_frame = 0;
     for (x = 4; x < 112; x++) {
         create_animation_frame(beam_in, animation_frame, 10, "spock_beam_in_" + x, 0,0);
@@ -360,6 +354,11 @@ $(document).ready(function () {
     animation_frame = 0;
     for (x = 1; x < 3; x++) {
         create_animation_frame(turn_left, animation_frame, 100, "spock_turn_left_" + x, 0,0);
+        animation_frame = animation_frame + 1;
+    }
+
+    for (x = 2; x < 0; x--) {
+        create_animation_frame(animations[ANIMATION_RETURN_TO_STANDING], animation_frame, 100, "spock_turn_left_" + x, 0,0);
         animation_frame = animation_frame + 1;
     }
 
@@ -497,9 +496,13 @@ $(document).ready(function () {
         build_rule(ANIMATION_WALK_LEFT_START,0,beam_out_walk_left_init),                
     ]
     rules[ANIMATION_TURN_LEFT]=[
-        build_rule(ANIMATION_PHASER_START_LEFT,0,(spock)=>{}),
-        build_rule(ANIMATION_WALK_LEFT_START,0,(spock)=>{}),
-        build_rule(ANIMATION_TRI_START_LEFT,0,(spock)=>{}),
+        //build_rule(ANIMATION_PHASER_START_LEFT,0,(spock)=>{}),
+        //build_rule(ANIMATION_WALK_LEFT_START,0,(spock)=>{}),
+        //build_rule(ANIMATION_TRI_START_LEFT,0,(spock)=>{}),
+        build_rule(ANIMATION_RETURN_TO_STANDING,0,(spock)=>{})
+    ]
+    rules[ANIMATION_RETURN_TO_STANDING]=[
+        build_rule(ANIMATION_BEAM_OUT,0,(spock)=>{})
     ]
 
     rules[ANIMATION_PHASER_START_LEFT]=[
