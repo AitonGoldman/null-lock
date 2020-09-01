@@ -356,11 +356,10 @@ $(document).ready(function () {
         create_animation_frame(turn_left, animation_frame, 100, "spock_turn_left_" + x, 0,0);
         animation_frame = animation_frame + 1;
     }
-
-    for (x = 2; x < 0; x--) {
-        create_animation_frame(animations[ANIMATION_RETURN_TO_STANDING], animation_frame, 100, "spock_turn_left_" + x, 0,0);
-        animation_frame = animation_frame + 1;
-    }
+    
+    create_animation_frame(animations[ANIMATION_RETURN_TO_STANDING], 0, 100, "spock_turn_left_2", 0,0);
+    create_animation_frame(animations[ANIMATION_RETURN_TO_STANDING], 1, 100, "spock_turn_left_1", 0,0);
+    
 
     animation_frame = 0;
     walk_animation_offsets = [];          
