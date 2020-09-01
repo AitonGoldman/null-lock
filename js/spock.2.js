@@ -356,7 +356,8 @@ $(document).ready(function () {
         create_animation_frame(turn_left, animation_frame, 100, "spock_turn_left_" + x, 0,0);
         animation_frame = animation_frame + 1;
     }
-
+    
+    animation_frame = 0;
     for (x = 2; x < 0; x--) {
         create_animation_frame(animations[ANIMATION_RETURN_TO_STANDING], animation_frame, 100, "spock_turn_left_" + x, 0,0);
         animation_frame = animation_frame + 1;
