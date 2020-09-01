@@ -12,9 +12,565 @@ function loadImages(){
     //$("body").append('<style>#phaser_beam {background-color:green;transform:rotate(10deg);}</style>');
 }
 
-$(document).ready(function (){
+
+
+var MAX_META_ANIMATIONS = 1;
+var MIN_META_ANIMATIONS = 2;
+
+var META_ANIMATION_BEAM_IN = 0;
+var META_ANIMATION_BEAM_OUT = 0;
+var META_ANIMATION_WALK_LEFT = 0;
+var META_ANIMATION_COM_LEFT = 1;
+
+var ANIMATION_BEAM_IN = 0;
+var ANIMATION_BEAM_OUT = 1;
+var ANIMATION_WALK_LEFT_START = 2;
+var ANIMATION_WALK_LEFT = 3;
+var ANIMATION_WALK_END = 4;
+var ANIMATION_COM_LEFT = 5;
+var ANIMATION_TURN_LEFT= 6;
+var ANIMATION_COM_END_LEFT = 7;
+var ANIMATION_TRI_START_LEFT = 8;
+var ANIMATION_TRI_LEFT = 9;
+var ANIMATION_TRI_ADJUST_LEFT = 10;
+var ANIMATION_TRI_END_LEFT = 11;
+var ANIMATION_PHASER_START_LEFT=12;
+var ANIMATION_PHASER_CROUCH_LEFT=13;
+var ANIMATION_PHASER_STANDING_LEFT=14;
+var ANIMATION_PHASER_HOLSTER_LEFT=15;
+var ANIMATION_PHASER_END_LEFT=16;
+
+
+const deepCopyFunction = (inObject) => {
+    let outObject, value, key
+
+    if (typeof inObject !== "object" || inObject === null) {
+        return inObject // Return the value if inObject is not an object
+    }
+
+    // Create an array or object to hold the values
+    outObject = Array.isArray(inObject) ? [] : {}
+
+    for (key in inObject) {
+        value = inObject[key]
+
+        // Recursively (deep) copy for nested objects, including arrays
+        outObject[key] = deepCopyFunction(value)
+    }
+
+    return outObject
+}
+
+function dumpImgElementsJson(){
+    var imgDumpJson = {};
+    $("img").each((i,e)=>{
+        //console.log($(e).attr("src")+" "+$(e).attr("id"))
+        imgDumpJson[$(e).attr("id")]=$(e).attr("src");
+    })
+    $("#dump").html(JSON.stringify(imgDumpJson));
+
+}
+
+function create_animation_frame(animation, frame_num, duration, img_layer, delta_x, delta_y) {
+    animation.list_of_animations_for_run[frame_num] = {
+        duration: duration,
+        img_layer: img_layer,
+        delta_x: delta_x,
+        delta_y: delta_y
+    }
+}
+
+function create_animation_object(max_frame) {
+    var animation_obj = {
+        cur_frame: 0,
+        max_frame: max_frame,
+        time_on_cur_frame: 0,
+        list_of_animations_for_run: [],
+        num_repeats:0
+    };
+    return animation_obj;
+}
+
+function create_spock(animations,rules) {
+    return {
+        prev_frame_div:undefined,
+        cur_frame_div:undefined,
+        animations:animations,
+        current_animation: ANIMATION_BEAM_IN,
+        current_animation_object: deepCopyFunction(animations[ANIMATION_BEAM_IN]),
+        x: 400,
+        y: 400,
+        last_three_animations:[],
+        timeStampOfLastFrame:0,
+        rules:rules
+    }
+}
+
+function getRandomInt(max) {
+     return Math.floor(Math.random() * Math.floor(max));
+}
+
+function choose_next_animation(spock){            
+    if(spock.x<-25){
+        spock.x = getRandomInt(500);
+        spock.y = getRandomInt(500);
+        spock.current_animation=ANIMATION_BEAM_IN
+        spock.current_animation_object=deepCopyFunction(spock.animations[ANIMATION_BEAM_IN])
+        return;
+    }
+    if(spock.current_animation_object.num_repeats>0){
+        spock.current_animation_object.num_repeats=spock.current_animation_object.num_repeats-1;
+        spock.current_animation_object.cur_frame=0;
+        return;
+    }
+    if(spock.rules[spock.current_animation]){
+        new_animation_range = spock.rules[spock.current_animation].length;              
+        var new_animation_list = spock.rules[spock.current_animation];
+        // if(spock.last_three_animations.length==3){
+        //     new_animation_list = spock.rules[spock.current_animation].slice().filter((x)=>{
+        //         if(x.new_animation!=spock.last_three_animations[0]){
+        //             return true;
+        //         }
+        //         return false;
+        //     });
+        //     if(new_animation_list.length == 0){
+        //         console.log("choices", spock.rules[spock.current_animation]);
+        //         console.log("last three animations",spock.last_three_animations)
+        //     }
+        // }
+        
+        new_animation_index = getRandomInt(new_animation_list.length);
+        new_animation = new_animation_list[new_animation_index].new_animation;  
+        num_repeats = getRandomInt(new_animation_list[new_animation_index].num_repeats);
+        console.log("NUM REPEATS WILL BE "+num_repeats)
+        spock.last_three_animations.push(spock.current_animation);
+        if(spock.last_three_animations.length == 5){
+            spock.last_three_animations = spock.last_three_animations.slice(1)
+        }
+        spock.current_animation=new_animation
+        spock.current_animation_object=deepCopyFunction(spock.animations[new_animation])
+        spock.current_animation_object.num_repeats=num_repeats;
+        new_animation_list[new_animation_index].spock_init(spock);
+        return
+    }
+    
+    spock.current_animation = undefined
+}
+
+function generic_frame_advance(animation_object){
+
+}
+
+function animation_loop(spock,proceed){
+    // create function for each animation_sequence
+    // generic function will just run through the frames
+    // for different objects with different durations, need universal clock and each object needs to figure out how long since the last frame
+    var diffTime = new Date().getTime() - spock.timeStampOfLastFrame;
+    var duration =  spock.current_animation_object.list_of_animations_for_run[spock.current_animation_object.cur_frame].duration;
+
+    //console.log(diffTime.toString()+" "+duration.toString());
+    if(spock.current_animation == ANIMATION_PHASER_END_LEFT){
+       //console.log(spock.current_animation_object.cur_frame);
+    }    
+    if(diffTime > duration){
+        spock.timeStampOfLastFrame = new Date().getTime();
+    } else {
+       setTimeout(()=>{                
+           animation_loop(spock,true)},25)           
+       return;
+    }
+    if(spock.current_animation == ANIMATION_PHASER_CROUCH_LEFT){
+        if(spock.current_animation_object.cur_frame==0){
+            place_phaser_beam(spock.x,spock.y)
+        } else {
+            $("#phaser_beam").css("visibility","hidden")
+        }
+    } 
+             
+    var done_with_animation=false;
+    if(spock.current_animation_object.cur_frame+1>=spock.current_animation_object.max_frame){
+        done_with_animation=true;
+    }
+    spock.prev_frame_div =  $("#"+spock.current_animation_object.list_of_animations_for_run[spock.current_animation_object.cur_frame].img_layer)
+
+    if(done_with_animation!=true){
+        spock.current_animation_object.cur_frame=spock.current_animation_object.cur_frame+1
+    }
+
+    if(done_with_animation){
+        choose_next_animation(spock);
+        if(spock.current_animation==undefined){
+            return;
+        }
+    }
+    spock.cur_frame_div =  $("#"+spock.current_animation_object.list_of_animations_for_run[spock.current_animation_object.cur_frame].img_layer)
+    spock.x = spock.x + spock.current_animation_object.list_of_animations_for_run[spock.current_animation_object.cur_frame].delta_x
+    spock.y = spock.y + spock.current_animation_object.list_of_animations_for_run[spock.current_animation_object.cur_frame].delta_y           
+    // var duration =  spock.current_animation_object.list_of_animations_for_run[spock.current_animation_object.cur_frame].duration;
+    $(spock.prev_frame_div).css("visibility","hidden");
+    $(spock.cur_frame_div).css("top",spock.y);            
+    $(spock.cur_frame_div).css("left",spock.x);
+    $(spock.cur_frame_div).css("visibility","visible");
+    // spock.timeStampOfLastFrame = new Date().getTime();
+    //setTimeout(()=>{                
+    //    animation_loop(spock,true)},duration)
+    setTimeout(()=>{                
+       animation_loop(spock,true)},25)            
+}
+
+
+function build_rule(next_animation,num_repeats,spock_init){
+    return {
+        new_animation:next_animation,
+        spock_init:spock_init,
+        num_repeats:num_repeats
+    }
+}
+function slope(a, b) {
+    if (a[0] == b[0]) {
+        return null;
+    }
+
+    return (b[1] - a[1]) / (b[0] - a[0]);
+}
+
+
+function intercept(point, slope) {
+    if (slope === null) {
+     // vertical line
+        return point[0];
+    }
+
+    return point[1] - slope * point[0];
+}
+function calc_phaser_collision(left,top){
+    var width = left;
+    var sinSide = Math.sin((85*Math.PI)/180)
+    var result = (width/sinSide) * Math.sin((5*Math.PI)/180)
+    var sinSide2 = Math.sin((90*Math.PI)/180)
+    var result2 = (width/sinSide2) * Math.sin((80*Math.PI)/180)
+    var phaser_tip_top_location = top + 17;
+    // var phaser_tip_left_location = left  + 6;
+    //var phaser_tip_top_location = top;
+    var phaser_tip_left_location = left - 1;
+    var end_of_phaser_line_top = phaser_tip_top_location-result;
+    var end_of_phaser_line_left = phaser_tip_left_location-result2;                       
+    console.log("end of phaser line",end_of_phaser_line_left+" "+end_of_phaser_line_top);
+    var A = [end_of_phaser_line_left, end_of_phaser_line_top-32];
+    var B = [phaser_tip_left_location, phaser_tip_top_location];
+
+
+    var m = slope(A, B);
+    var b = intercept(A, m);
+
+    var coordinates = [];
+    for (var x = A[0]; x <= B[0]; x++) {
+        var y = m * x + b;
+        coordinates.push([x, y]);
+        var elementsHit=document.elementsFromPoint(x,y);
+        if(elementsHit.length>0 ){                    
+            for(var element of elementsHit){
+                if(element.localName!="body" && element.localName!="html"){
+                    if($(element).hasClass("phaserpulse")==false){
+                        console.log($(element).hasClass("phaserpulse"));
+                        var phaserLength = Math.abs($(element).offset().left-phaser_tip_left_location) - ($(element).width()/4)
+                        $(element).addClass("animated phaserpulse")
+                        return Math.floor(phaserLength);
+                    }                           
+                }
+            }
+            //console.log("INTERSECTION WITH",elementsHit)                                   
+        }
+        //$("body").append("<div style='position:absolute;left:"+Math.floor(x)+"px;top:"+Math.floor(y)+"px;height:1px;width:1px;background-color:red'></div>");
+    
+    }
+    //document.elementsFromPoint()
+    return left;
+}
+
+function place_phaser_beam( left, top ){
+    if($("#phaser_beam").css("visibility")=="visible"){
+        console.log("beam already there")
+        return;
+    }
+    var width = calc_phaser_collision(left,top);
+    $("#phaser_beam").css("visibility","visible");
+    $("#phaser_beam").css("width",width.toString()+"px");
+    var sinSide = Math.sin((85*Math.PI)/180)
+    var result = (width/sinSide) * Math.sin((5*Math.PI)/180)
+    var sinSide2 = Math.sin((90*Math.PI)/180)
+    var result2 = (width/sinSide2) * Math.sin((80*Math.PI)/180)
+    //console.log(result2);
+    //var phaser_tip_top_location = 398 + 17;
+    var phaser_tip_top_location = top + 17;
+    var phaser_tip_left_location = left  + 6;
+    // var phaser_tip_left_location = 362 + 6;
+    $("#phaser_beam").css("height","2px");
+    // $("#phaser_beam").css("top",(398+8).toString()+"px");
+    // $("#phaser_beam").css("left",(362-94).toString()+"px");      
+    $("#phaser_beam").css("top",(phaser_tip_top_location-result).toString()+"px");
+    $("#phaser_beam").css("left",(phaser_tip_left_location-result2).toString()+"px");            
+
+}
+
+$(document).ready(function () {
     loadImages();
-    $("#spock_start_walk_1").css("visibility","visible")
+    var beam_in = create_animation_object(109);
+    var beam_out = create_animation_object(109);
+    var turn_left = create_animation_object(2);
+    var walk_left_start = create_animation_object(3);
+    var walk_left = create_animation_object(7);
+    var walk_left_end = create_animation_object(3);
+    var com_left = create_animation_object(5)
+    var com_left_end = create_animation_object(6)
+    var animations = [];
+
+    animations[ANIMATION_BEAM_IN] = beam_in;
+    animations[ANIMATION_BEAM_OUT] = beam_out;
+
+    animations[ANIMATION_TURN_LEFT] = turn_left;
+    animations[ANIMATION_WALK_LEFT_START] = walk_left_start;
+    animations[ANIMATION_WALK_LEFT] = walk_left;
+    animations[ANIMATION_WALK_END] = walk_left_end;
+    animations[ANIMATION_COM_LEFT] = com_left;
+    animations[ANIMATION_COM_END_LEFT] = com_left_end;
+    animations[ANIMATION_TRI_START_LEFT] = create_animation_object(4)
+    animations[ANIMATION_TRI_END_LEFT] = create_animation_object(5)
+    animations[ANIMATION_TRI_LEFT] = create_animation_object(2)
+    animations[ANIMATION_TRI_ADJUST_LEFT] = create_animation_object(3)
+    animations[ANIMATION_PHASER_START_LEFT] = create_animation_object(3)
+    animations[ANIMATION_PHASER_END_LEFT] = create_animation_object(4)
+
+    animations[ANIMATION_PHASER_CROUCH_LEFT] = create_animation_object(3)
+    animations[ANIMATION_PHASER_STANDING_LEFT] = create_animation_object(3)
+    animations[ANIMATION_PHASER_HOLSTER_LEFT] = create_animation_object(4)
+
+    var animation_frame = 0;
+    for (x = 4; x < 112; x++) {
+        create_animation_frame(beam_in, animation_frame, 10, "spock_beam_in_" + x, 0,0);
+        animation_frame = animation_frame + 1;
+    }
+    create_animation_frame(beam_in, animation_frame, 1000, "spock_beam_in_112", 0,0);
+    animation_frame = 0;
+    for (x = 112; x >= 4; x--) {
+        create_animation_frame(beam_out, animation_frame, 10, "spock_beam_in_" + x, 0,0);
+        animation_frame = animation_frame + 1;
+    }
+
+    animation_frame = 0;
+    for (x = 1; x < 3; x++) {
+        create_animation_frame(turn_left, animation_frame, 100, "spock_turn_left_" + x, 0,0);
+        animation_frame = animation_frame + 1;
+    }
+
+    animation_frame = 0;
+    walk_animation_offsets = [];          
+    walk_animation_offsets=[-15,-7,0,-1,-5,-5,-10]
+    for (x = 1; x < 8; x++) {
+        create_animation_frame(walk_left, animation_frame, 100, "spock_walk_" + x, walk_animation_offsets[animation_frame],0);
+        animation_frame = animation_frame + 1;
+    }
+    
+
+
+    create_animation_frame(walk_left_start, 0, 100, "spock_start_walk_1", 0,0);
+    create_animation_frame(walk_left_start, 1, 100, "spock_start_walk_2", -15,0);
+    create_animation_frame(walk_left_start, 2, 100, "spock_start_walk_3", -10,0);
+    create_animation_frame(walk_left_end, 0, 100, "spock_end_walk_1", -15,0);
+    create_animation_frame(walk_left_end, 1, 100, "spock_end_walk_2", -10,0);
+    create_animation_frame(walk_left_end, 2, 2000, "spock_end_walk_3", 5,0);   
+    
+    animation_frame=0;
+    animation_offsets=[-6,6,0,0,-7];
+    animation_offsets_y=[0,0,0,0,-1];
+    for (x = 1; x < 6; x++) {
+        create_animation_frame(com_left, animation_frame, 150, "spock_com_" + x, animation_offsets[animation_frame],animation_offsets_y[animation_frame]);
+        animation_frame = animation_frame + 1;
+    }
+    com_left.list_of_animations_for_run[4].duration=1000;
+    animation_frame=0;
+    animation_offsets=[0,6,0,0,-6];
+    animation_offsets_y=[0,1,0,0,0];
+    for (x = 5; x >= 1; x--) {
+        create_animation_frame(com_left_end, animation_frame, 150, "spock_com_" + x, animation_offsets[animation_frame],animation_offsets_y[animation_frame]);
+        animation_frame = animation_frame + 1;
+    }
+    create_animation_frame(com_left_end, animation_frame, 150, "spock_com_6", 6,0);
+    com_left_end.list_of_animations_for_run[5].duration=3000;
+
+    animation_offsets=[-16,0,0,0,0];
+    animation_offsets_y=[0,0,0,0,0];
+    animation_frame=0;
+    for (x = 1; x < 5; x++) {
+        create_animation_frame(animations[ANIMATION_TRI_START_LEFT], animation_frame, 150, "spock_tri_start_" + x, animation_offsets[animation_frame],animation_offsets_y[animation_frame]);
+        animation_frame = animation_frame + 1;
+    }
+
+    animation_offsets=[0,0,0,0,0];
+    animation_offsets_y=[0,0,0,0,0];
+    animation_frame=0;
+    for (x = 1; x < 3; x++) {
+        create_animation_frame(animations[ANIMATION_TRI_LEFT], animation_frame, 1150, "spock_tri_" + x, animation_offsets[animation_frame],animation_offsets_y[animation_frame]);
+        animation_frame = animation_frame + 1;
+    }
+
+    animation_offsets=[0,0,0,0,0];
+    animation_offsets_y=[0,0,0,0,0];
+    animation_frame=0;
+    for (x = 1; x < 4; x++) {
+        create_animation_frame(animations[ANIMATION_TRI_ADJUST_LEFT], animation_frame, 150, "spock_tri_adjust_" + x, animation_offsets[animation_frame],animation_offsets_y[animation_frame]);
+        animation_frame = animation_frame + 1;
+    }
+    animations[ANIMATION_TRI_ADJUST_LEFT].list_of_animations_for_run[1].duration=1000;
+
+    animation_offsets=[0,0,0,0,15];
+    animation_offsets_y=[0,0,0,0,0];
+    animation_frame=0;
+    for (x = 1; x < 6; x++) {
+        create_animation_frame(animations[ANIMATION_TRI_END_LEFT], animation_frame, 150, "spock_tri_end_" + x, animation_offsets[animation_frame],animation_offsets_y[animation_frame]);
+        animation_frame = animation_frame + 1;
+    }
+
+    animation_offsets=[-38,0,0,0,0];
+    animation_offsets_y=[-2,0,0,0,0];
+    animation_frame=0;
+    for (x = 1; x < 4; x++) {
+        create_animation_frame(animations[ANIMATION_PHASER_START_LEFT], animation_frame, 150, "spock_phaser_draw_" + x, animation_offsets[animation_frame],animation_offsets_y[animation_frame]);
+        animation_frame = animation_frame + 1;
+    }
+
+    animation_offsets=[0,0,0];
+    animation_offsets_y=[0,0,0];
+    animation_frame=0;
+    for (x = 3; x > 0; x--) {
+        create_animation_frame(animations[ANIMATION_PHASER_END_LEFT], animation_frame, 150, "spock_phaser_draw_" + x, animation_offsets[animation_frame],animation_offsets_y[animation_frame]);
+        animation_frame = animation_frame + 1;
+    }
+    create_animation_frame(animations[ANIMATION_PHASER_END_LEFT], animation_frame, 150, "spock_end_walk_3", 38,2);
+
+    animation_offsets=[0,0,0,0,0];
+    animation_offsets_y=[0,0,0,0,0];
+    animation_frame=0;
+    for (x = 1; x < 4; x++) {
+        create_animation_frame(animations[ANIMATION_PHASER_CROUCH_LEFT], animation_frame, 550, "spock_phaser_crouch_fire_" + x, animation_offsets[animation_frame],animation_offsets_y[animation_frame]);
+        animation_frame = animation_frame + 1;
+    }
+    animations[ANIMATION_PHASER_CROUCH_LEFT].list_of_animations_for_run[1].duration=2000;            
+
+
+    rules = [];
+    var spock = create_spock(animations,rules);
+    var walk_left_init = (spock_to_init)=>{
+        var animation_done = spock_to_init.current_animation_object.cur_frame==spock_to_init.current_animation_object.max_frame
+        if(spock_to_init.x<50){
+            spock_to_init.x = getRandomInt(500);
+            spock_to_init.y = getRandomInt(500);
+            spock_to_init.current_animation=ANIMATION_BEAM_IN
+            spock_to_init.current_animation_object=deepCopyFunction(spock_to_init.animations[ANIMATION_BEAM_IN])
+            return;
+        }
+    }
+    var beam_out_init = (spock_to_init)=>{
+        spock_to_init.x = getRandomInt(500);
+        spock_to_init.y = getRandomInt(500);
+    }
+    var beam_out_walk_left_init = (spock_to_init)=>{
+         // if(spock_to_init.current_animation==ANIMATION_BEAM_OUT && animation_done){
+        //     console.log("beam out done, going to walk!")
+        spock_to_init.x=$( document ).width();
+        //      return;
+        // }
+    }
+    rules[ANIMATION_BEAM_IN]=[
+        build_rule(ANIMATION_TURN_LEFT,0,(spock)=>{}),
+        build_rule(ANIMATION_COM_LEFT,0,(spock)=>{}),
+
+    ]
+    rules[ANIMATION_COM_LEFT]=[
+        build_rule(ANIMATION_COM_END_LEFT,0,(spock)=>{}),                
+    ]
+    rules[ANIMATION_COM_END_LEFT]=[
+        build_rule(ANIMATION_BEAM_OUT,0,(spock)=>{}),                
+    ]
+    rules[ANIMATION_BEAM_OUT]=[
+        build_rule(ANIMATION_BEAM_IN,0,beam_out_init),
+        build_rule(ANIMATION_WALK_LEFT_START,0,beam_out_walk_left_init),                
+    ]
+    rules[ANIMATION_TURN_LEFT]=[
+        build_rule(ANIMATION_PHASER_START_LEFT,0,(spock)=>{}),
+        build_rule(ANIMATION_WALK_LEFT_START,0,(spock)=>{}),
+        build_rule(ANIMATION_TRI_START_LEFT,0,(spock)=>{}),
+    ]
+
+    rules[ANIMATION_PHASER_START_LEFT]=[
+        //build_rule(ANIMATION_WALK_LEFT_START,0,(spock)=>{}),
+        //build_rule(ANIMATION_TRI_START_LEFT,0,(spock)=>{}),
+        build_rule(ANIMATION_PHASER_CROUCH_LEFT,3,(spock)=>{})
+    ]
+
+    rules[ANIMATION_PHASER_CROUCH_LEFT]=[
+        build_rule(ANIMATION_PHASER_END_LEFT,0,(spock)=>{})
+    ]
+
+    rules[ANIMATION_PHASER_END_LEFT]=[
+        build_rule(ANIMATION_TURN_LEFT,0,(spock)=>{}),
+        build_rule(ANIMATION_COM_LEFT,0,(spock)=>{}),
+        build_rule(ANIMATION_BEAM_OUT,0,(spock)=>{})
+    ]
+
+    rules[ANIMATION_TRI_START_LEFT]=[
+        build_rule(ANIMATION_TRI_LEFT,10,(spock)=>{})
+    ]
+
+    rules[ANIMATION_TRI_END_LEFT]=[
+        build_rule(ANIMATION_TURN_LEFT,0,(spock)=>{}),
+        build_rule(ANIMATION_BEAM_OUT,0,(spock)=>{}),                
+    ]
+
+
+    rules[ANIMATION_TRI_LEFT]=[
+        build_rule(ANIMATION_TRI_ADJUST_LEFT,0,(spock)=>{}),
+        build_rule(ANIMATION_TRI_END_LEFT,0,(spock)=>{})
+
+    ]
+
+    rules[ANIMATION_TRI_ADJUST_LEFT]=[
+        build_rule(ANIMATION_TRI_LEFT,0,(spock)=>{})
+    ]
+
+    rules[ANIMATION_WALK_LEFT_START]=[
+        build_rule(ANIMATION_WALK_LEFT,10,(spock)=>{})
+    ]
+    rules[ANIMATION_WALK_LEFT]=[
+        build_rule(ANIMATION_WALK_END,0,(spock)=>{}),
+    ]
+    rules[ANIMATION_WALK_END]=[
+        build_rule(ANIMATION_TURN_LEFT,0,(spock)=>{}),
+        build_rule(ANIMATION_COM_LEFT,0,(spock)=>{}),
+    ]
+
+    animation_loop(spock,true);
+    // var width = 50;
+    // $("#phaser_beam").css("width",width.toString()+"px");
+    // var sinSide = Math.sin((85*Math.PI)/180)
+    // var result = (width/sinSide) * Math.sin((5*Math.PI)/180)
+    // var sinSide2 = Math.sin((90*Math.PI)/180)
+    // var result2 = (width/sinSide2) * Math.sin((80*Math.PI)/180)
+    // console.log(result2);
+    // var phaser_tip_top_location = 398 + 17;
+    // var phaser_tip_left_location = 362 + 6;
+    // $("#phaser_beam").css("height","2px");
+    // // $("#phaser_beam").css("top",(398+8).toString()+"px");
+    // // $("#phaser_beam").css("left",(362-94).toString()+"px");      
+    // $("#phaser_beam").css("top",(phaser_tip_top_location-result).toString()+"px");
+    // $("#phaser_beam").css("left",(phaser_tip_left_location-result2).toString()+"px");            
+
+
 })
+
+
+// $(document).ready(function (){
+//     $("#spock_start_walk_1").css("visibility","visible")
+// })
 
 
