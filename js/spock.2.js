@@ -145,6 +145,7 @@ function choose_next_animation(spock){
         spock.current_animation_object=deepCopyFunction(spock.animations[new_animation])
         spock.current_animation_object.num_repeats=num_repeats;
         new_animation_list[new_animation_index].spock_init(spock);
+        console.log("X AND Y",spock.x+" "+spock.y)
         return
     }
     
