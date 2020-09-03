@@ -42,7 +42,9 @@ var ANIMATION_PHASER_HOLSTER_LEFT=15;
 var ANIMATION_PHASER_END_LEFT=16;
 var ANIMATION_RETURN_TO_STANDING=17;
 var animationStarts=[ANIMATION_BEAM_IN,ANIMATION_WALK_LEFT_START,ANIMATION_COM_LEFT,ANIMATION_TRI_START_LEFT,ANIMATION_PHASER_START_LEFT];
-var animationsLeft=[...animationStarts];
+var animationsLeft=[];
+
+
 
 const deepCopyFunction = (inObject) => {
     let outObject, value, key
@@ -137,10 +139,7 @@ function choose_next_animation(spock){
         new_animation = new_animation_list[new_animation_index].new_animation;  
         num_repeats = getRandomInt(new_animation_list[new_animation_index].num_repeats);
         console.log("NUM REPEATS WILL BE "+num_repeats)
-        spock.last_three_animations.push(spock.current_animation);
-        if(spock.last_three_animations.length == 5){
-            spock.last_three_animations = spock.last_three_animations.slice(1)
-        }
+       
         spock.current_animation=new_animation
         spock.current_animation_object=deepCopyFunction(spock.animations[new_animation])
         spock.current_animation_object.num_repeats=num_repeats;
